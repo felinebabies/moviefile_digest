@@ -1,6 +1,8 @@
 require 'bundler'
 Bundler.require
 
+require 'tmpdir'
+
 class MoviefileDigester
     SEQUENCEIMAGEFORMAT = "screenshot_%d.jpg"
 
@@ -34,6 +36,18 @@ class MoviefileDigester
         sequensimgfilepath = File.join(sequensimgpath, SEQUENCEIMAGEFORMAT)
 
         `#{@ffmpegpath} -i "#{sequensimgfilepath}" -pix_fmt rgb24 -f gif -r 1 "#{destfilepath}"`
+    end
+
+    # 指定した動画ファイルをgifアニメ化
+    def movie_to_gif(moviepath, destfilepath)
+        # 一時ファイルパスを作成
+        Dir.mktmpdir do |dir|
+            # 動画を連番画像化
+            movie_to_sequential(moviepath, dir)
+    
+            # 連番画像をgifアニメ化
+            sequential_to_gif(dir, destfilepath)
+        end
     end
 end
 
