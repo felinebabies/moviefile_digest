@@ -4,7 +4,7 @@ Bundler.require
 require 'tmpdir'
 
 class MoviefileDigester
-    SEQUENCEIMAGEFORMAT = "screenshot_%d.jpg"
+    SEQUENCEIMAGEFORMAT = "screenshot_%03d.jpg"
 
     def initialize()
         @ffmpegpath = "ffmpeg"
@@ -35,7 +35,7 @@ class MoviefileDigester
 
         sequensimgfilepath = File.join(sequensimgpath, SEQUENCEIMAGEFORMAT)
 
-        `#{@ffmpegpath} -i "#{sequensimgfilepath}" -pix_fmt rgb24 -f gif -r 1 "#{destfilepath}"`
+        `#{@ffmpegpath} -y -f image2 -r 1 -i "#{sequensimgfilepath}" "#{destfilepath}"`
     end
 
     # 指定した動画ファイルをgifアニメ化
