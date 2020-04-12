@@ -11,17 +11,28 @@ class DigestCatalogGenerator
     IMAGEDIR = "thumb"
 
     # カタログファイルを出力
-    def generate(inputdirlist, destdir, inputrecursive)
+    def generate(inputdirlist, destdir, inputrecursive, extension)
         md = MoviefileDigester.new
 
         inputdirlist.each do |dir|
+            # 対応拡張子一覧を作成
+            downcaseext = extension.map do |ext|
+                ext.downcase
+            end
+
+            upcaseext = downcaseext.map do |ext|
+                ext.upcase
+            end
+
+            extlist = downcaseext + upcaseext
+
             # 指定ディレクトリ以下の対象ファイル全てを検出
             path = Pathname.new(dir)
 
             if inputrecursive then
                 path += '**'
             end
-            path += '*.{mp4,MP4}'
+            path += "*.{#{extlist.join(',')}}"
             
             moviefiles = Dir.glob(path)
 

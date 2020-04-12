@@ -18,6 +18,11 @@ opt = OptionParser.new
 
 $optionerror = false
 
+$extensionlist = [
+    "mp4",
+    "mov"
+]
+
 def setoutputpath(outdir)
     if outdir then
         if Dir.exist?(outdir) then
@@ -36,6 +41,11 @@ def setinputpath(indir)
         STDERR.puts "指定されたディレクトリ[ #{indir} ]は存在しません。"
         $optionerror = true
     end
+end
+
+def setextension(ext)
+    $extensionlist << ext
+    $extensionlist.uniq!
 end
 
 # 設定ファイルから設定を読み込む
@@ -57,6 +67,16 @@ def parseconfigfile(cnffilepath)
     if cnffilepath['recursive'] then
         $inputrecursive = true
     end
+
+    if confdata['extension'] then
+        if confdata['extension'].instance_of?(Array) then
+            confdata['extension'].each do |i|
+                setextension(i)
+            end
+        else
+            setextension(confdata['extension'])
+        end
+    end
 end
 
 opt.on('-o', '--out OUTPUTDIR', 'specify the output directory') do |outdir|
@@ -69,6 +89,10 @@ end
 
 opt.on('-r', '--recursive', 'recursively explore the input directory') do
     $inputrecursive = true
+end
+
+opt.on('-e', '--extension EXTENSION', 'add an extension to search for') do |ext|
+    setextension(ext)
 end
 
 opt.on('-c', '--config CONFIGFILE', 'specify the configuration file') do |cnffilepath|
@@ -99,5 +123,5 @@ end
 
 dg = DigestCatalogGenerator.new
 
-dg.generate($inputdirlist, $outputdir, $inputrecursive)
+dg.generate($inputdirlist, $outputdir, $inputrecursive, $extensionlist)
 
